@@ -9,24 +9,31 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// JWTAuthMiddleware validates the JWT token from the Authorization header
+// JWTAuthMiddleware validates the JWT token from the Authorization header or cookies
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var tokenString string
+
+		// First try to get token from Authorization header
 		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
-			c.Abort()
-			return
+		if authHeader != "" {
+			parts := strings.Split(authHeader, " ")
+			if len(parts) == 2 && parts[0] == "Bearer" {
+				tokenString = parts[1]
+			}
 		}
 
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization header format"})
-			c.Abort()
-			return
+		// If no token in header, try to get from cookie
+		if tokenString == "" {
+			cookie, err := c.Cookie("access_token")
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication required"})
+				c.Abort()
+				return
+			}
+			tokenString = cookie
 		}
 
-		tokenString := parts[1]
 		userID, err := utils.ValidateToken(tokenString)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})

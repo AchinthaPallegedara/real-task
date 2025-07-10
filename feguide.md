@@ -242,43 +242,18 @@ const API_BASE_URL =
 // Create axios instance
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true, // Include cookies in requests
   headers: {
     "Content-Type": "application/json",
   },
 });
-
-// Token management
-let authToken: string | null = null;
-
-export const setAuthToken = (token: string | null) => {
-  authToken = token;
-  if (token) {
-    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    if (typeof window !== "undefined") {
-      localStorage.setItem("auth_token", token);
-    }
-  } else {
-    delete api.defaults.headers.common["Authorization"];
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("auth_token");
-    }
-  }
-};
-
-// Initialize token from localStorage on client side
-if (typeof window !== "undefined") {
-  const savedToken = localStorage.getItem("auth_token");
-  if (savedToken) {
-    setAuthToken(savedToken);
-  }
-}
 
 // Response interceptor for error handling
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
     if (error.response?.status === 401) {
-      setAuthToken(null);
+      // Token expired or invalid, redirect to login
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }
@@ -313,6 +288,8 @@ export const authAPI = {
     api.post("/api/auth/reset-password", { token, new_password }),
 
   getAuthStatus: () => api.get("/api/auth/status"),
+
+  logout: () => api.post("/api/auth/logout"),
 
   changePassword: (current_password: string, new_password: string) =>
     api.post("/api/auth/change-password", { current_password, new_password }),
@@ -395,32 +372,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const router = useRouter();
 
-  // Initialize auth state
+  // Initialize auth state by checking with server
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem("auth_token");
-      if (token) {
-        setAuthToken(token);
-        try {
-          const response = await authAPI.getAuthStatus();
-          setState({
-            user: response.data.user,
-            token,
-            isLoading: false,
-            isAuthenticated: true,
-          });
-        } catch (error) {
-          // Token is invalid
-          setAuthToken(null);
-          setState({
-            user: null,
-            token: null,
-            isLoading: false,
-            isAuthenticated: false,
-          });
-        }
-      } else {
-        setState((prev) => ({ ...prev, isLoading: false }));
+      try {
+        const response = await authAPI.getAuthStatus();
+        setState({
+          user: response.data.user,
+          token: response.data.token || "cookie-auth", // Placeholder since we're using cookies
+          isLoading: false,
+          isAuthenticated: true,
+        });
+      } catch (error) {
+        // User not authenticated
+        setState({
+          user: null,
+          token: null,
+          isLoading: false,
+          isAuthenticated: false,
+        });
       }
     };
 
@@ -430,12 +400,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (data: LoginRequest): Promise<boolean> => {
     try {
       const response = await authAPI.login(data);
-      const { token, user } = response.data;
+      const { user } = response.data;
 
-      setAuthToken(token);
       setState({
         user,
-        token,
+        token: "cookie-auth", // Placeholder since we're using cookies
         isLoading: false,
         isAuthenticated: true,
       });
@@ -462,8 +431,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = () => {
-    setAuthToken(null);
+  const logout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+    
     setState({
       user: null,
       token: null,
@@ -521,9 +495,8 @@ const protectedRoutes = ["/dashboard", "/projects", "/tasks", "/settings"];
 const authRoutes = ["/login", "/register", "/verify-email", "/reset-password"];
 
 export function middleware(request: NextRequest) {
-  const token =
-    request.cookies.get("auth_token")?.value ||
-    request.headers.get("authorization")?.replace("Bearer ", "");
+  // Get token from cookies
+  const token = request.cookies.get("access_token")?.value;
 
   const { pathname } = request.nextUrl;
 

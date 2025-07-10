@@ -125,12 +125,31 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	// Set httpOnly cookies for tokens
+	c.SetCookie(
+		"access_token",
+		tokenPair.AccessToken,
+		3600, // 1 hour
+		"/",
+		"",
+		false, // Secure: false for local development
+		true,  // HttpOnly: true
+	)
+
+	c.SetCookie(
+		"refresh_token",
+		tokenPair.RefreshToken,
+		7*24*3600, // 7 days
+		"/",
+		"",
+		false, // Secure: false for local development
+		true,  // HttpOnly: true
+	)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successful",
-		"access_token": tokenPair.AccessToken,
-		"refresh_token": tokenPair.RefreshToken,
+		"token": tokenPair.AccessToken, // Keep this for backward compatibility
 		"expires_at": tokenPair.ExpiresAt,
-		"token_type": "Bearer",
 		"user": gin.H{
 			"id": user.ID,
 			"email": user.Email,
@@ -389,24 +408,49 @@ func ChangePassword(c *gin.Context) {
 
 // RefreshToken handles refresh token requests
 func RefreshToken(c *gin.Context) {
-	var req RefreshTokenRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	// Try to get refresh token from cookie first, then from request body
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		// Fallback to JSON request body
+		var req RefreshTokenRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token required"})
+			return
+		}
+		refreshToken = req.RefreshToken
 	}
 
-	tokenPair, err := services.RefreshAccessToken(req.RefreshToken)
+	tokenPair, err := services.RefreshAccessToken(refreshToken)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Set new cookies
+	c.SetCookie(
+		"access_token",
+		tokenPair.AccessToken,
+		3600, // 1 hour
+		"/",
+		"",
+		false, // Secure: false for local development
+		true,  // HttpOnly: true
+	)
+
+	c.SetCookie(
+		"refresh_token",
+		tokenPair.RefreshToken,
+		7*24*3600, // 7 days
+		"/",
+		"",
+		false, // Secure: false for local development
+		true,  // HttpOnly: true
+	)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Token refreshed successfully",
-		"access_token": tokenPair.AccessToken,
-		"refresh_token": tokenPair.RefreshToken,
+		"token": tokenPair.AccessToken, // Keep this for backward compatibility
 		"expires_at": tokenPair.ExpiresAt,
-		"token_type": "Bearer",
 	})
 }
 
@@ -422,6 +466,27 @@ func Logout(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to logout"})
 		return
 	}
+
+	// Clear httpOnly cookies
+	c.SetCookie(
+		"access_token",
+		"",
+		-1, // Expire immediately
+		"/",
+		"",
+		false, // Secure: false for local development
+		true,  // HttpOnly: true
+	)
+
+	c.SetCookie(
+		"refresh_token",
+		"",
+		-1, // Expire immediately
+		"/",
+		"",
+		false, // Secure: false for local development
+		true,  // HttpOnly: true
+	)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
