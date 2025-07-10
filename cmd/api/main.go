@@ -51,6 +51,7 @@ func main() {
 	// Add middleware manually for better control
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+	router.Use(middleware.CORSMiddleware()) // Add CORS middleware
 	
 	// Configure trusted proxies for security
 	router.SetTrustedProxies([]string{"127.0.0.1", "::1"}) // Only trust localhost

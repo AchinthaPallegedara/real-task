@@ -34,6 +34,147 @@ This API follows clean architecture principles with real-time capabilities:
 └── test-realtime-features.sh   # Comprehensive testing script
 ```
 
+## 🔐 Authentication with HttpOnly Cookies
+
+This API uses HttpOnly cookies for secure authentication, providing better protection against XSS attacks compared to storing tokens in localStorage.
+
+### How it works
+
+1. **Login Process**:
+
+   - Upon successful login, both access_token and refresh_token are sent as HttpOnly cookies
+   - Access token expires after 1 hour
+   - Refresh token expires after 7 days
+   - Tokens are also returned in the response body for backward compatibility
+
+2. **Authenticated Requests**:
+
+   - The API automatically checks for the access_token cookie in requests
+   - No need to manually send Authorization headers when cookies are enabled
+   - Browsers automatically include cookies with each request to the domain
+
+3. **Token Refresh**:
+
+   - When the access token expires, call the refresh endpoint
+   - The API checks for the refresh_token cookie
+   - New tokens are set as cookies automatically
+
+4. **Logout**:
+   - The logout endpoint clears both cookies by setting them to expire immediately
+   - The server also invalidates the refresh token in the database
+
+### Frontend Integration
+
+```javascript
+// Example of login with credentials (using axios)
+const login = async (email, password) => {
+  try {
+    const response = await axios.post(
+      "/login",
+      { email, password },
+      {
+        withCredentials: true, // Important to enable cookies
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// For authenticated requests, just include withCredentials
+const getProfile = async () => {
+  try {
+    const response = await axios.get("/api/profile", {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Logout - the server will clear the cookies
+const logout = async () => {
+  try {
+    await axios.post(
+      "/api/auth/logout",
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+```
+
+### CORS Configuration
+
+For cross-domain requests, ensure your frontend application is included in the allowed origins and credentials are enabled:
+
+```go
+// CORSMiddleware configuration already includes:
+c.Header("Access-Control-Allow-Credentials", "true")
+```
+
+### Using HttpOnly Cookies with Postman
+
+When testing the API with Postman, you'll need to configure it to handle HttpOnly cookies properly:
+
+1. **Enable Cookie Management in Postman**:
+
+   - Open Postman settings (click the gear icon)
+   - Go to the "General" tab
+   - Ensure "Automatically follow redirects" is enabled
+   - Make sure "Save cookies with requests" is enabled
+
+2. **Configure a Postman Collection**:
+
+   - Create a new collection for your API
+   - Go to the collection settings (click the "..." next to your collection name)
+   - Select the "Settings" tab
+   - Under "Settings", enable "Automatically store cookies"
+
+3. **Testing the Authentication Flow**:
+
+   - **Login**: When you make a successful login request, Postman will automatically store the HttpOnly cookies
+   - **Authenticated Requests**: Postman will automatically include the cookies in subsequent requests to the same domain
+   - **Refresh**: When your access token expires, call the refresh endpoint to get new cookies
+   - **Logout**: The logout endpoint will clear the cookies
+
+4. **Example Login Request**:
+
+   ```
+   POST http://localhost:8080/login
+   Content-Type: application/json
+
+   {
+     "email": "user@example.com",
+     "password": "password123"
+   }
+   ```
+
+   After successful login, you can check the cookies by:
+
+   - Going to the "Cookies" button in the footer of Postman
+   - Selecting your domain
+   - You should see `access_token` and `refresh_token` cookies listed
+
+5. **Making Authenticated Requests**:
+
+   - Simply make your requests to protected endpoints
+   - Postman will automatically include the cookies
+   - No need to manually set Authorization headers
+
+6. **Troubleshooting**:
+   - If you're getting authentication errors, check if cookies are being stored properly
+   - You can manually inspect and manage cookies via Postman's Cookie Manager
+   - Try clearing cookies and logging in again if you experience issues
+
+This cookie-based approach simplifies testing as Postman handles the authentication state automatically between requests.
+
 ## 🗄️ Database Schema
 
 ### Core Models
@@ -674,8 +815,8 @@ Authorization: Bearer <token>
 Content-Type: application/json
 
 {
-  "name": "Updated Project Name",        // Optional
-  "description": "Updated description"   // Optional
+  "name": "Updated Project Name",        # Optional
+  "description": "Updated description"   # Optional
 }
 
 # Only project owners can update projects
@@ -1183,7 +1324,7 @@ curl -X POST http://localhost:8080/api/projects/1/invite \
   -d '{"user_email":"collaborator@example.com","message":"Join my project!"}'
 ```
 
-5. **Login as User 2 and accept invitation:**
+#### 7. Login as User 2 and accept invitation:
 
 ```bash
 # Login as User 2
@@ -1202,7 +1343,7 @@ curl -X POST http://localhost:8080/api/invitations/1/respond \
   -d '{"accept":true}'
 ```
 
-6. **Create and manage tasks:**
+8. **Create and manage tasks:**
 
 ```bash
 # Create a task (as either user)
@@ -1218,7 +1359,7 @@ curl -X PUT http://localhost:8080/api/tasks/1 \
   -d '{"assignee_id":2,"status":"in_progress"}'
 ```
 
-7. **Clean up (optional) - Delete project:**
+9. **Clean up (optional) - Delete project:**
 
 ```bash
 # Only project owner can delete projects
@@ -1352,36 +1493,11 @@ The current implementation provides a comprehensive collaborative task managemen
 - **Container orchestration** with Kubernetes
 - **Monitoring and observability** with proper metrics
 
-## 🛠️ Development Guidelines
-
-### Code Organization
-
-- **Services**: Contains all business logic and database operations
-- **Handlers**: HTTP request/response handling only
-- **Models**: Database structures and relationships
-- **Middleware**: Cross-cutting concerns (authentication, logging)
-
-### Error Handling
-
-- Consistent error response format
-- Appropriate HTTP status codes
-- Detailed error messages for development
-- Secure error messages for production
-
-### Database Best Practices
-
-- GORM for ORM operations
-- Proper foreign key relationships
-- Soft deletes for data integrity
-- Database migrations for schema changes
-
-This API provides a solid foundation for a collaborative task management system with room for exciting real-time and advanced features!
-
-# Refresh Token Implementation
+## 🔧 Refresh Token Implementation
 
 This document describes the refresh token functionality added to the authentication system.
 
-## Overview
+### Overview
 
 The application now supports JWT refresh tokens for enhanced security and better user experience. This implementation follows OAuth 2.0 best practices.
 
