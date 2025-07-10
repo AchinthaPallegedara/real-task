@@ -437,7 +437,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Logout error:", error);
     }
-    
+
     setState({
       user: null,
       token: null,
