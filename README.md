@@ -264,9 +264,27 @@ SMTP_PORT="587"
 SMTP_USERNAME="your_email@gmail.com"
 SMTP_PASSWORD="your_app_password"
 FROM_EMAIL="noreply@yourdomain.com"
+
+# Google OAuth (Optional)
+GOOGLE_CLIENT_ID="your_google_client_id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="your_google_client_secret"
+GOOGLE_REDIRECT_URL="http://localhost:8080/api/auth/google/callback"
 ```
 
 **Note**: For development, email sending is simulated in console logs. For production, configure SMTP settings to enable real email delivery.
+
+#### Google OAuth Setup (Optional)
+
+To enable Google authentication:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Google+ API or People API
+4. Create OAuth 2.0 credentials (Web application)
+5. Add authorized redirect URI: `http://localhost:8080/api/auth/google/callback`
+6. Copy the Client ID and Client Secret to your `.env` file
+
+Without Google OAuth configuration, the `/api/auth/providers` endpoint will show Google as disabled.
 
 ### Installation & Running
 
@@ -611,6 +629,90 @@ Response (401):
 {
   "error": "Email not verified. Please check your email for verification link.",
   "email_verified": false
+}
+```
+
+#### Google OAuth Authentication
+
+**Get Google OAuth URL**
+
+```http
+GET /api/auth/google/url
+
+Response (200):
+{
+  "auth_url": "https://accounts.google.com/oauth/authorize?client_id=...",
+  "state": "random_state_string"
+}
+```
+
+**Google OAuth Callback (for web redirect)**
+
+```http
+GET /api/auth/google/callback?code=AUTH_CODE&state=STATE
+
+Response (200):
+{
+  "message": "Login successful",
+  "access_token": "jwt_access_token_here",
+  "refresh_token": "jwt_refresh_token_here",
+  "expires_at": "2023-12-07T11:30:00Z",
+  "token_type": "Bearer",
+  "user": {
+    "id": 1,
+    "email": "user@gmail.com",
+    "name": "User Name",
+    "email_verified": true,
+    "two_factor_enabled": false,
+    "provider": "google"
+  }
+}
+```
+
+**Google OAuth Login (for client-side apps)**
+
+```http
+POST /api/auth/google
+Content-Type: application/json
+
+{
+  "code": "authorization_code_from_google",
+  "state": "state_parameter"
+}
+
+Response (200):
+{
+  "message": "Login successful",
+  "access_token": "jwt_access_token_here",
+  "refresh_token": "jwt_refresh_token_here",
+  "expires_at": "2023-12-07T11:30:00Z",
+  "token_type": "Bearer",
+  "user": {
+    "id": 1,
+    "email": "user@gmail.com",
+    "name": "User Name",
+    "email_verified": true,
+    "two_factor_enabled": false,
+    "provider": "google"
+  }
+}
+```
+
+**Get Available OAuth Providers**
+
+```http
+GET /api/auth/providers
+
+Response (200):
+{
+  "providers": [
+    {
+      "name": "Google",
+      "id": "google",
+      "endpoint": "/api/auth/google",
+      "enabled": true
+    }
+  ]
 }
 ```
 

@@ -8,6 +8,7 @@ import (
 	"AchinthaPallegedara/real-task/internal/handlers"
 	"AchinthaPallegedara/real-task/internal/middleware"
 	"AchinthaPallegedara/real-task/internal/models"
+	"AchinthaPallegedara/real-task/internal/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -64,6 +65,10 @@ func main() {
 	handlers.InitNotificationService()
 	log.Println("📧 Background notification system initialized!")
 
+	// 🔥 Initialize OAuth configurations
+	services.InitOAuthConfigs()
+	log.Println("🔐 OAuth providers initialized!")
+
 	// Public routes
 	router.POST("/register", handlers.Register)
 	router.POST("/login", handlers.Login)
@@ -78,6 +83,12 @@ func main() {
 		auth.GET("/reset-password", handlers.ResetPassword)                // Password reset form (GET)
 		auth.POST("/reset-password", handlers.ResetPassword)               // Password reset (POST)
 		auth.POST("/refresh", handlers.RefreshToken)                       // Refresh access token
+		
+		// 🔥 OAuth routes
+		auth.GET("/providers", handlers.OAuthProviders)                    // Get available OAuth providers
+		auth.GET("/google/url", handlers.GoogleAuthURL)                    // Get Google OAuth URL
+		auth.GET("/google/callback", handlers.GoogleAuthCallback)          // Google OAuth callback
+		auth.POST("/google", handlers.GoogleAuthLogin)                     // Google OAuth login (POST)
 	}
 
 	// Protected routes
