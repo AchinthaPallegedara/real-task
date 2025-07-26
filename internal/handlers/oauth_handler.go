@@ -26,6 +26,14 @@ func generateOAuthState() (string, error) {
 }
 
 // GoogleAuthURL returns the Google OAuth authorization URL
+// @Summary Get Google OAuth URL
+// @Description Get Google OAuth authorization URL for login
+// @Tags OAuth
+// @Accept json
+// @Produce json
+// @Success 200 {object} OAuthURLResponse "OAuth URL generated successfully"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /api/auth/google/url [get]
 func GoogleAuthURL(c *gin.Context) {
 	state, err := generateOAuthState()
 	if err != nil {
@@ -150,6 +158,13 @@ func GoogleAuthLogin(c *gin.Context) {
 }
 
 // OAuthProviders returns available OAuth providers
+// @Summary Get OAuth providers
+// @Description Get list of available OAuth providers
+// @Tags OAuth
+// @Accept json
+// @Produce json
+// @Success 200 {object} OAuthProvidersResponse "OAuth providers retrieved successfully"
+// @Router /api/auth/providers [get]
 func OAuthProviders(c *gin.Context) {
 	providers := []gin.H{
 		{

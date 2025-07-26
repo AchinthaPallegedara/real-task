@@ -55,6 +55,17 @@ type RefreshTokenRequest struct {
 }
 
 // Register handles user registration with email verification
+// @Summary Register a new user
+// @Description Register a new user account with email verification
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body RegisterRequest true "Registration details"
+// @Success 201 {object} SuccessResponse "User registered successfully"
+// @Failure 400 {object} ErrorResponse "Invalid input"
+// @Failure 409 {object} ErrorResponse "User already exists"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /register [post]
 func Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -80,6 +91,17 @@ func Register(c *gin.Context) {
 }
 
 // Login handles user login with 2FA support
+// @Summary User login
+// @Description Authenticate user with email and password, supports 2FA
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body LoginRequest true "Login credentials"
+// @Success 200 {object} AuthResponse "Login successful"
+// @Failure 400 {object} ErrorResponse "Invalid input"
+// @Failure 401 {object} ErrorResponse "Authentication failed"
+// @Failure 423 {object} ErrorResponse "Account locked"
+// @Router /login [post]
 func Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -148,7 +170,7 @@ func Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successful",
-		"token": tokenPair.AccessToken, // Keep this for backward compatibility
+		// "token": tokenPair.AccessToken, // Keep this for backward compatibility
 		"expires_at": tokenPair.ExpiresAt,
 		"user": gin.H{
 			"id": user.ID,
@@ -161,6 +183,17 @@ func Login(c *gin.Context) {
 }
 
 // VerifyEmail handles email verification
+// @Summary Verify user email
+// @Description Verify user email address using verification token
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param token query string false "Verification token (GET method)"
+// @Param request body VerifyEmailRequest false "Verification token (POST method)"
+// @Success 200 {object} SuccessResponse "Email verified successfully"
+// @Failure 400 {object} ErrorResponse "Invalid or expired token"
+// @Router /api/auth/verify-email [get]
+// @Router /api/auth/verify-email [post]
 func VerifyEmail(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
@@ -181,6 +214,15 @@ func VerifyEmail(c *gin.Context) {
 }
 
 // ResendVerification resends email verification
+// @Summary Resend verification email
+// @Description Resend email verification link to user's email address
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body ResendVerificationRequest true "Email address"
+// @Success 200 {object} SuccessResponse "Verification email sent"
+// @Failure 400 {object} ErrorResponse "Invalid email or user not found"
+// @Router /api/auth/resend-verification [post]
 func ResendVerification(c *gin.Context) {
 	var req ResendVerificationRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -197,6 +239,15 @@ func ResendVerification(c *gin.Context) {
 }
 
 // RequestPasswordReset initiates password reset process
+// @Summary Request password reset
+// @Description Send password reset link to user's email address
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body RequestPasswordResetRequest true "Email address"
+// @Success 200 {object} SuccessResponse "Password reset email sent"
+// @Failure 400 {object} ErrorResponse "Invalid email or user not found"
+// @Router /api/auth/request-password-reset [post]
 func RequestPasswordReset(c *gin.Context) {
 	var req RequestPasswordResetRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -240,6 +291,16 @@ func ResetPassword(c *gin.Context) {
 }
 
 // SetupTwoFactor initiates 2FA setup
+// @Summary Setup two-factor authentication
+// @Description Initialize two-factor authentication setup and get QR code
+// @Tags Two-Factor Authentication
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} TwoFactorSetupResponse "2FA setup initiated successfully"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /api/auth/2fa/setup [post]
 func SetupTwoFactor(c *gin.Context) {
 	userID, exists := c.Get("user_id")
 	if !exists {
@@ -407,6 +468,16 @@ func ChangePassword(c *gin.Context) {
 }
 
 // RefreshToken handles refresh token requests
+// @Summary Refresh access token
+// @Description Generate new access token using refresh token
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body RefreshTokenRequest true "Refresh token"
+// @Success 200 {object} AuthResponse "New access token generated"
+// @Failure 400 {object} ErrorResponse "Invalid input"
+// @Failure 401 {object} ErrorResponse "Invalid or expired refresh token"
+// @Router /api/auth/refresh [post]
 func RefreshToken(c *gin.Context) {
 	// Try to get refresh token from cookie first, then from request body
 	refreshToken, err := c.Cookie("refresh_token")

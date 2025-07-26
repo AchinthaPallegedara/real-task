@@ -11,6 +11,20 @@ import (
 
 // InviteUserToProject handles the POST /api/projects/:project_id/invite endpoint
 // Allows project owners to invite users to collaborate on a project
+// @Summary Invite user to project
+// @Description Invite a user to collaborate on a project (project owner only)
+// @Tags Collaboration
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param project_id path int true "Project ID"
+// @Param request body services.InviteUserInput true "Invitation details"
+// @Success 201 {object} ProjectInvitationResponse "Invitation sent successfully"
+// @Failure 400 {object} ErrorResponse "Invalid input"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /api/projects/{project_id}/invite [post]
 func InviteUserToProject(c *gin.Context) {
 	// Get the project ID from the URL parameter
 	projectIDStr := c.Param("project_id")

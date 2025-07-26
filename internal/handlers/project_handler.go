@@ -10,6 +10,18 @@ import (
 )
 
 // CreateProject handles the POST /api/projects endpoint.
+// @Summary Create a new project
+// @Description Create a new project for the authenticated user
+// @Tags Projects
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body services.CreateProjectInput true "Project details"
+// @Success 201 {object} ProjectResponse "Project created successfully"
+// @Failure 400 {object} ErrorResponse "Invalid input"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /api/projects [post]
 func CreateProject(c *gin.Context) {
 	var input services.CreateProjectInput
 
@@ -40,6 +52,16 @@ func CreateProject(c *gin.Context) {
 }
 
 // GetProjects handles the GET /api/projects endpoint.
+// @Summary Get all projects
+// @Description Get all projects for the authenticated user (owned + collaborated)
+// @Tags Projects
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {array} ProjectResponse "Projects retrieved successfully"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /api/projects [get]
 func GetProjects(c *gin.Context) {
 	// Get the user ID from the context
 	userID, exists := c.Get("user_id")
@@ -62,6 +84,19 @@ func GetProjects(c *gin.Context) {
 }
 
 // GetProject handles the GET /api/projects/:project_id endpoint.
+// @Summary Get a specific project
+// @Description Get details of a specific project by ID
+// @Tags Projects
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param project_id path int true "Project ID"
+// @Success 200 {object} ProjectResponse "Project retrieved successfully"
+// @Failure 400 {object} ErrorResponse "Invalid project ID"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 404 {object} ErrorResponse "Project not found"
+// @Router /api/projects/{project_id} [get]
 func GetProject(c *gin.Context) {
 	// Get project ID from URL parameter
 	projectID := c.Param("project_id")
@@ -102,6 +137,20 @@ func GetProject(c *gin.Context) {
 }
 
 // UpdateProject handles the PUT /api/projects/:project_id endpoint.
+// @Summary Update a project
+// @Description Update an existing project's details
+// @Tags Projects
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param project_id path int true "Project ID"
+// @Param request body services.CreateProjectInput true "Updated project details"
+// @Success 200 {object} ProjectResponse "Project updated successfully"
+// @Failure 400 {object} ErrorResponse "Invalid input"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 404 {object} ErrorResponse "Project not found"
+// @Router /api/projects/{project_id} [put]
 func UpdateProject(c *gin.Context) {
 	// Get project ID from URL parameter
 	projectID := c.Param("project_id")
@@ -150,6 +199,19 @@ func UpdateProject(c *gin.Context) {
 }
 
 // DeleteProject handles the DELETE /api/projects/:project_id endpoint.
+// @Summary Delete a project
+// @Description Delete an existing project (owner only)
+// @Tags Projects
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param project_id path int true "Project ID"
+// @Success 200 {object} SuccessResponse "Project deleted successfully"
+// @Failure 400 {object} ErrorResponse "Invalid project ID"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 404 {object} ErrorResponse "Project not found"
+// @Router /api/projects/{project_id} [delete]
 func DeleteProject(c *gin.Context) {
 	// Get project ID from URL parameter
 	projectID := c.Param("project_id")

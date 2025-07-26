@@ -1,0 +1,1172 @@
+basePath: /
+definitions:
+  handlers.AuthResponse:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      expires_in:
+        example: 3600
+        type: integer
+      message:
+        example: Login successful
+        type: string
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user:
+        $ref: '#/definitions/handlers.UserResponse'
+    type: object
+  handlers.ErrorResponse:
+    properties:
+      error:
+        example: Invalid input
+        type: string
+    type: object
+  handlers.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      two_factor_token:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handlers.OAuthProvider:
+    properties:
+      display_name:
+        example: Google
+        type: string
+      enabled:
+        example: true
+        type: boolean
+      name:
+        example: google
+        type: string
+    type: object
+  handlers.OAuthProvidersResponse:
+    properties:
+      providers:
+        items:
+          $ref: '#/definitions/handlers.OAuthProvider'
+        type: array
+    type: object
+  handlers.OAuthURLResponse:
+    properties:
+      auth_url:
+        example: https://accounts.google.com/oauth/authorize?...
+        type: string
+      state:
+        example: randomStateString
+        type: string
+    type: object
+  handlers.ProjectInvitationResponse:
+    properties:
+      created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      email:
+        example: invitee@example.com
+        type: string
+      id:
+        example: 1
+        type: integer
+      invitee:
+        $ref: '#/definitions/handlers.UserResponse'
+      invitee_id:
+        example: 2
+        type: integer
+      inviter:
+        $ref: '#/definitions/handlers.UserResponse'
+      inviter_id:
+        example: 1
+        type: integer
+      project:
+        $ref: '#/definitions/handlers.ProjectResponse'
+      project_id:
+        example: 1
+        type: integer
+      role:
+        example: collaborator
+        type: string
+      status:
+        example: pending
+        type: string
+      updated_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.ProjectResponse:
+    properties:
+      created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      description:
+        example: Project description
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: My Project
+        type: string
+      owner:
+        $ref: '#/definitions/handlers.UserResponse'
+      owner_id:
+        example: 1
+        type: integer
+      updated_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.RealTimeStatsResponse:
+    properties:
+      active_projects:
+        example: 10
+        type: integer
+      connections_by_project:
+        additionalProperties:
+          type: integer
+        type: object
+      total_connections:
+        example: 50
+        type: integer
+    type: object
+  handlers.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  handlers.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handlers.RequestPasswordResetRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  handlers.ResendVerificationRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  handlers.SuccessResponse:
+    properties:
+      message:
+        example: Operation completed successfully
+        type: string
+    type: object
+  handlers.TaskResponse:
+    properties:
+      assignee:
+        $ref: '#/definitions/handlers.UserResponse'
+      assignee_id:
+        example: 2
+        type: integer
+      created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      description:
+        example: Implement the new feature
+        type: string
+      id:
+        example: 1
+        type: integer
+      project_id:
+        example: 1
+        type: integer
+      status:
+        example: pending
+        type: string
+      title:
+        example: Complete feature
+        type: string
+      updated_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.TwoFactorSetupResponse:
+    properties:
+      backup_codes:
+        example:
+        - "123456"
+        - "789012"
+        - "345678"
+        items:
+          type: string
+        type: array
+      qr_code_url:
+        example: data:image/png;base64,iVBOR...
+        type: string
+      secret_key:
+        example: JBSWY3DPEHPK3PXP
+        type: string
+    type: object
+  handlers.UserPresenceResponse:
+    properties:
+      is_online:
+        example: true
+        type: boolean
+      last_seen:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      project_id:
+        example: 1
+        type: integer
+      user_id:
+        example: 1
+        type: integer
+    type: object
+  handlers.UserResponse:
+    properties:
+      created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      email:
+        example: user@example.com
+        type: string
+      email_verified:
+        example: true
+        type: boolean
+      id:
+        example: 1
+        type: integer
+      is_active:
+        example: true
+        type: boolean
+      last_login_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      name:
+        example: John Doe
+        type: string
+      two_factor_enabled:
+        example: false
+        type: boolean
+      updated_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.VerifyEmailRequest:
+    properties:
+      token:
+        type: string
+    required:
+    - token
+    type: object
+  services.CreateProjectInput:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  services.CreateTaskInput:
+    properties:
+      assignee_id:
+        description: Optional assignee
+        type: integer
+      description:
+        description: Optional description
+        type: string
+      title:
+        description: Task title is required
+        type: string
+    required:
+    - title
+    type: object
+  services.InviteUserInput:
+    properties:
+      message:
+        description: Optional invitation message
+        type: string
+      project_id:
+        description: Project to invite user to
+        type: integer
+      user_email:
+        description: Email of user to invite
+        type: string
+    required:
+    - project_id
+    - user_email
+    type: object
+  services.UpdateTaskInput:
+    properties:
+      assignee_id:
+        description: Optional assignee update
+        type: integer
+      description:
+        description: Optional description update
+        type: string
+      status:
+        description: Optional status update (pending, in_progress, completed)
+        type: string
+      title:
+        description: Optional title update
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: A comprehensive task management API with real-time collaboration features
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Real Task API
+  version: "1.0"
+paths:
+  /api/admin/realtime-stats:
+    get:
+      consumes:
+      - application/json
+      description: Get real-time system statistics including connection counts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Real-time statistics retrieved successfully
+          schema:
+            $ref: '#/definitions/handlers.RealTimeStatsResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Admin access required
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get real-time statistics
+      tags:
+      - Real-time
+  /api/auth/2fa/setup:
+    post:
+      consumes:
+      - application/json
+      description: Initialize two-factor authentication setup and get QR code
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 2FA setup initiated successfully
+          schema:
+            $ref: '#/definitions/handlers.TwoFactorSetupResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Setup two-factor authentication
+      tags:
+      - Two-Factor Authentication
+  /api/auth/google/url:
+    get:
+      consumes:
+      - application/json
+      description: Get Google OAuth authorization URL for login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OAuth URL generated successfully
+          schema:
+            $ref: '#/definitions/handlers.OAuthURLResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get Google OAuth URL
+      tags:
+      - OAuth
+  /api/auth/providers:
+    get:
+      consumes:
+      - application/json
+      description: Get list of available OAuth providers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OAuth providers retrieved successfully
+          schema:
+            $ref: '#/definitions/handlers.OAuthProvidersResponse'
+      summary: Get OAuth providers
+      tags:
+      - OAuth
+  /api/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Generate new access token using refresh token
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New access token generated
+          schema:
+            $ref: '#/definitions/handlers.AuthResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Invalid or expired refresh token
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Refresh access token
+      tags:
+      - Authentication
+  /api/auth/request-password-reset:
+    post:
+      consumes:
+      - application/json
+      description: Send password reset link to user's email address
+      parameters:
+      - description: Email address
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RequestPasswordResetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password reset email sent
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "400":
+          description: Invalid email or user not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Request password reset
+      tags:
+      - Authentication
+  /api/auth/resend-verification:
+    post:
+      consumes:
+      - application/json
+      description: Resend email verification link to user's email address
+      parameters:
+      - description: Email address
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ResendVerificationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Verification email sent
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "400":
+          description: Invalid email or user not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Resend verification email
+      tags:
+      - Authentication
+  /api/auth/verify-email:
+    get:
+      consumes:
+      - application/json
+      description: Verify user email address using verification token
+      parameters:
+      - description: Verification token (GET method)
+        in: query
+        name: token
+        type: string
+      - description: Verification token (POST method)
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/handlers.VerifyEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email verified successfully
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "400":
+          description: Invalid or expired token
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Verify user email
+      tags:
+      - Authentication
+    post:
+      consumes:
+      - application/json
+      description: Verify user email address using verification token
+      parameters:
+      - description: Verification token (GET method)
+        in: query
+        name: token
+        type: string
+      - description: Verification token (POST method)
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/handlers.VerifyEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email verified successfully
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "400":
+          description: Invalid or expired token
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Verify user email
+      tags:
+      - Authentication
+  /api/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get the profile information of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile retrieved successfully
+          schema:
+            $ref: '#/definitions/handlers.UserResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - User
+  /api/projects:
+    get:
+      consumes:
+      - application/json
+      description: Get all projects for the authenticated user (owned + collaborated)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Projects retrieved successfully
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ProjectResponse'
+            type: array
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all projects
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: Create a new project for the authenticated user
+      parameters:
+      - description: Project details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.CreateProjectInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Project created successfully
+          schema:
+            $ref: '#/definitions/handlers.ProjectResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new project
+      tags:
+      - Projects
+  /api/projects/{project_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an existing project (owner only)
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project deleted successfully
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "400":
+          description: Invalid project ID
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Project not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a project
+      tags:
+      - Projects
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific project by ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project retrieved successfully
+          schema:
+            $ref: '#/definitions/handlers.ProjectResponse'
+        "400":
+          description: Invalid project ID
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Project not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a specific project
+      tags:
+      - Projects
+    put:
+      consumes:
+      - application/json
+      description: Update an existing project's details
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      - description: Updated project details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.CreateProjectInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project updated successfully
+          schema:
+            $ref: '#/definitions/handlers.ProjectResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Project not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a project
+      tags:
+      - Projects
+  /api/projects/{project_id}/connected-users:
+    get:
+      consumes:
+      - application/json
+      description: Get list of users currently connected to a specific project
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Connected users retrieved successfully
+          schema:
+            items:
+              $ref: '#/definitions/handlers.UserPresenceResponse'
+            type: array
+        "400":
+          description: Invalid project ID
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get connected users for project
+      tags:
+      - Real-time
+  /api/projects/{project_id}/invite:
+    post:
+      consumes:
+      - application/json
+      description: Invite a user to collaborate on a project (project owner only)
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      - description: Invitation details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.InviteUserInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Invitation sent successfully
+          schema:
+            $ref: '#/definitions/handlers.ProjectInvitationResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Invite user to project
+      tags:
+      - Collaboration
+  /api/projects/{project_id}/tasks:
+    get:
+      consumes:
+      - application/json
+      description: Get all tasks within a specific project
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tasks retrieved successfully
+          schema:
+            items:
+              $ref: '#/definitions/handlers.TaskResponse'
+            type: array
+        "400":
+          description: Invalid project ID
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all tasks for a project
+      tags:
+      - Tasks
+    post:
+      consumes:
+      - application/json
+      description: Create a new task within a specific project
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      - description: Task details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.CreateTaskInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Task created successfully
+          schema:
+            $ref: '#/definitions/handlers.TaskResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new task
+      tags:
+      - Tasks
+  /api/tasks/{task_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an existing task
+      parameters:
+      - description: Task ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task deleted successfully
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "400":
+          description: Invalid task ID
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a task
+      tags:
+      - Tasks
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific task by ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task retrieved successfully
+          schema:
+            $ref: '#/definitions/handlers.TaskResponse'
+        "400":
+          description: Invalid task ID
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a specific task
+      tags:
+      - Tasks
+    put:
+      consumes:
+      - application/json
+      description: Update an existing task's details
+      parameters:
+      - description: Task ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      - description: Updated task details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.UpdateTaskInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task updated successfully
+          schema:
+            $ref: '#/definitions/handlers.TaskResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Access denied
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a task
+      tags:
+      - Tasks
+  /api/users/{user_id}/presence:
+    get:
+      consumes:
+      - application/json
+      description: Get presence information for a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User presence retrieved successfully
+          schema:
+            $ref: '#/definitions/handlers.UserPresenceResponse'
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: User not authenticated
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get user presence
+      tags:
+      - Real-time
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with email and password, supports 2FA
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/handlers.AuthResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Authentication failed
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "423":
+          description: Account locked
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: User login
+      tags:
+      - Authentication
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user account with email verification
+      parameters:
+      - description: Registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered successfully
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: User already exists
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - Authentication
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

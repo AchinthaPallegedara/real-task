@@ -10,6 +10,18 @@ import (
 
 // GetConnectedUsers handles GET /api/projects/:project_id/connected-users
 // Returns list of currently connected users for a project
+// @Summary Get connected users for project
+// @Description Get list of users currently connected to a specific project
+// @Tags Real-time
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param project_id path int true "Project ID"
+// @Success 200 {array} UserPresenceResponse "Connected users retrieved successfully"
+// @Failure 400 {object} ErrorResponse "Invalid project ID"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Router /api/projects/{project_id}/connected-users [get]
 func GetConnectedUsers(c *gin.Context) {
 	// Get the project ID from the URL parameter
 	projectIDStr := c.Param("project_id")
@@ -75,6 +87,18 @@ func GetConnectedUsers(c *gin.Context) {
 
 // GetUserPresence handles GET /api/users/:user_id/presence
 // Returns presence information for a specific user
+// @Summary Get user presence
+// @Description Get presence information for a specific user
+// @Tags Real-time
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param user_id path int true "User ID"
+// @Success 200 {object} UserPresenceResponse "User presence retrieved successfully"
+// @Failure 400 {object} ErrorResponse "Invalid user ID"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 404 {object} ErrorResponse "User not found"
+// @Router /api/users/{user_id}/presence [get]
 func GetUserPresence(c *gin.Context) {
 	// Get the user ID from the URL parameter
 	userIDStr := c.Param("user_id")
@@ -131,6 +155,16 @@ func GetUserPresence(c *gin.Context) {
 
 // GetRealTimeStats handles GET /api/admin/realtime-stats
 // Returns real-time system statistics (admin only)
+// @Summary Get real-time statistics
+// @Description Get real-time system statistics including connection counts
+// @Tags Real-time
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} RealTimeStatsResponse "Real-time statistics retrieved successfully"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Admin access required"
+// @Router /api/admin/realtime-stats [get]
 func GetRealTimeStats(c *gin.Context) {
 	// Get the user ID from the context
 	userID, exists := c.Get("user_id")

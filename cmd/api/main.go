@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	_ "AchinthaPallegedara/real-task/docs" // Import generated docs
 	"AchinthaPallegedara/real-task/internal/database"
 	"AchinthaPallegedara/real-task/internal/handlers"
 	"AchinthaPallegedara/real-task/internal/middleware"
@@ -12,7 +13,31 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files" // gin-swagger middleware
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+// @title Real Task API
+// @version 1.0
+// @description A comprehensive task management API with real-time collaboration features
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
+
+// @schemes http https
 
 func main() {
 	// Load environment variables
@@ -97,16 +122,21 @@ func main() {
 	{
 		// User routes
 		protected.GET("/profile", handlers.GetUserProfile)
-		protected.GET("/auth/status", handlers.GetAuthStatus)           // Get authentication status
-		protected.POST("/auth/change-password", handlers.ChangePassword) // Change password
-		protected.POST("/auth/logout", handlers.Logout)                // Logout (revoke refresh token)
-		protected.POST("/auth/logout-all", handlers.LogoutAllDevices)  // Logout from all devices
 		
-		// Two-Factor Authentication routes
-		protected.POST("/auth/2fa/setup", handlers.SetupTwoFactor)      // Setup 2FA
-		protected.POST("/auth/2fa/confirm", handlers.ConfirmTwoFactor)  // Confirm 2FA setup
-		protected.POST("/auth/2fa/disable", handlers.DisableTwoFactor)  // Disable 2FA
-		protected.POST("/auth/2fa/verify", handlers.VerifyTwoFactor)    // Verify 2FA token
+		// Protected auth routes (requires authentication)
+		protectedAuth := protected.Group("/auth")
+		{
+			protectedAuth.GET("/status", handlers.GetAuthStatus)           // Get authentication status
+			protectedAuth.POST("/change-password", handlers.ChangePassword) // Change password  
+			protectedAuth.POST("/logout", handlers.Logout)                // Logout (revoke refresh token)
+			protectedAuth.POST("/logout-all", handlers.LogoutAllDevices)  // Logout from all devices
+			
+			// Two-Factor Authentication routes
+			protectedAuth.POST("/2fa/setup", handlers.SetupTwoFactor)      // Setup 2FA
+			protectedAuth.POST("/2fa/confirm", handlers.ConfirmTwoFactor)  // Confirm 2FA setup
+			protectedAuth.POST("/2fa/disable", handlers.DisableTwoFactor)  // Disable 2FA
+			protectedAuth.POST("/2fa/verify", handlers.VerifyTwoFactor)    // Verify 2FA token
+		}
 		
 		// Project routes
 		protected.POST("/projects", handlers.CreateProject)            // Create new project
@@ -134,6 +164,9 @@ func main() {
 		protected.GET("/users/:user_id/presence", handlers.GetUserPresence) // Get user presence
 		protected.GET("/admin/realtime-stats", handlers.GetRealTimeStats) // Real-time system stats
 	}
+
+	// Swagger documentation route
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// WebSocket endpoint - handled separately to support both header and query parameter authentication
 	router.GET("/api/ws", handlers.HandleWebSocket) // WebSocket connection endpoint

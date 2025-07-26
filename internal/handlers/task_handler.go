@@ -11,6 +11,20 @@ import (
 
 // CreateTask handles the POST /api/projects/:project_id/tasks endpoint
 // Creates a new task within a specific project
+// @Summary Create a new task
+// @Description Create a new task within a specific project
+// @Tags Tasks
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param project_id path int true "Project ID"
+// @Param request body services.CreateTaskInput true "Task details"
+// @Success 201 {object} TaskResponse "Task created successfully"
+// @Failure 400 {object} ErrorResponse "Invalid input"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /api/projects/{project_id}/tasks [post]
 func CreateTask(c *gin.Context) {
 	// Get the project ID from the URL parameter
 	projectIDStr := c.Param("project_id")
@@ -87,6 +101,19 @@ func CreateTask(c *gin.Context) {
 
 // GetTasksForProject handles the GET /api/projects/:project_id/tasks endpoint
 // Retrieves all tasks for a specific project
+// @Summary Get all tasks for a project
+// @Description Get all tasks within a specific project
+// @Tags Tasks
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param project_id path int true "Project ID"
+// @Success 200 {array} TaskResponse "Tasks retrieved successfully"
+// @Failure 400 {object} ErrorResponse "Invalid project ID"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /api/projects/{project_id}/tasks [get]
 func GetTasksForProject(c *gin.Context) {
 	// Get the project ID from the URL parameter
 	projectIDStr := c.Param("project_id")
@@ -127,6 +154,19 @@ func GetTasksForProject(c *gin.Context) {
 
 // GetTask handles the GET /api/tasks/:task_id endpoint
 // Retrieves a specific task by its ID
+// @Summary Get a specific task
+// @Description Get details of a specific task by ID
+// @Tags Tasks
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param task_id path int true "Task ID"
+// @Success 200 {object} TaskResponse "Task retrieved successfully"
+// @Failure 400 {object} ErrorResponse "Invalid task ID"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 404 {object} ErrorResponse "Task not found"
+// @Router /api/tasks/{task_id} [get]
 func GetTask(c *gin.Context) {
 	// Get the task ID from the URL parameter
 	taskIDStr := c.Param("task_id")
@@ -167,6 +207,20 @@ func GetTask(c *gin.Context) {
 
 // UpdateTask handles the PUT /api/tasks/:task_id endpoint
 // Updates an existing task
+// @Summary Update a task
+// @Description Update an existing task's details
+// @Tags Tasks
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param task_id path int true "Task ID"
+// @Param request body services.UpdateTaskInput true "Updated task details"
+// @Success 200 {object} TaskResponse "Task updated successfully"
+// @Failure 400 {object} ErrorResponse "Invalid input"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 404 {object} ErrorResponse "Task not found"
+// @Router /api/tasks/{task_id} [put]
 func UpdateTask(c *gin.Context) {
 	// Get the task ID from the URL parameter
 	taskIDStr := c.Param("task_id")
@@ -261,6 +315,19 @@ func UpdateTask(c *gin.Context) {
 
 // DeleteTask handles the DELETE /api/tasks/:task_id endpoint
 // Deletes an existing task
+// @Summary Delete a task
+// @Description Delete an existing task
+// @Tags Tasks
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param task_id path int true "Task ID"
+// @Success 200 {object} SuccessResponse "Task deleted successfully"
+// @Failure 400 {object} ErrorResponse "Invalid task ID"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 404 {object} ErrorResponse "Task not found"
+// @Router /api/tasks/{task_id} [delete]
 func DeleteTask(c *gin.Context) {
 	// Get the task ID from the URL parameter
 	taskIDStr := c.Param("task_id")

@@ -9,6 +9,16 @@ import (
 )
 
 // GetUserProfile retrieves the authenticated user's profile
+// @Summary Get user profile
+// @Description Get the profile information of the authenticated user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} UserResponse "User profile retrieved successfully"
+// @Failure 401 {object} ErrorResponse "User not authenticated"
+// @Failure 404 {object} ErrorResponse "User not found"
+// @Router /api/profile [get]
 func GetUserProfile(c *gin.Context) {
 	userID, exists := c.Get("user_id") // Get user ID from middleware context
 	if !exists {
