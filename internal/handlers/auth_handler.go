@@ -148,7 +148,7 @@ func Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successful",
-		"token": tokenPair.AccessToken, // Keep this for backward compatibility
+		// "token": tokenPair.AccessToken, // Keep this for backward compatibility
 		"expires_at": tokenPair.ExpiresAt,
 		"user": gin.H{
 			"id": user.ID,
